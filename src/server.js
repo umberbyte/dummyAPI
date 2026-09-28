@@ -24,6 +24,15 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(inspectorMiddleware);
 app.use(simulatorMiddleware);
 
+// Swagger & OpenAPI Specification
+app.get("/openapi.json", (req, res) => {
+  res.sendFile(path.join(__dirname, "docs", "openapi.json"));
+});
+
+app.get("/docs", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "docs.html"));
+});
+
 // Register All Stub Routers
 registerRoutes(app);
 
@@ -54,6 +63,8 @@ if (process.env.NODE_ENV !== "test") {
     console.log(`====================================================`);
     console.log(`🚀 dummyAPI Stub Server is running on port ${PORT}`);
     console.log(`🌐 Dashboard & API Explorer: http://localhost:${PORT}`);
+    console.log(`📖 Swagger UI Reference:    http://localhost:${PORT}/docs`);
+    console.log(`📄 OpenAPI Specification:  http://localhost:${PORT}/openapi.json`);
     console.log(`Docker & Local Ready | Environment: ${process.env.NODE_ENV || "development"}`);
     console.log(`====================================================`);
   });

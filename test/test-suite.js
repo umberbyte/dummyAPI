@@ -33,7 +33,14 @@ function runTests() {
     };
 
     try {
-      // 1. Inspector Catalog & Clear
+      // 1. OpenAPI Specification & Swagger Docs
+      const openApiRes = await request("GET", "/openapi.json");
+      assert(openApiRes.status === 200 && openApiRes.data.openapi.startsWith("3."), "OpenAPI 3.0 specification available");
+
+      const docsRes = await fetch(`http://localhost:${TEST_PORT}/docs`);
+      assert(docsRes.status === 200, "Swagger UI /docs endpoint is accessible");
+
+      // 2. Inspector Catalog & Clear
       const catRes = await request("GET", "/api/_inspector/catalog");
       assert(catRes.status === 200 && catRes.data.catalog.length >= 5, "Inspector Catalog returns 5 categories");
 

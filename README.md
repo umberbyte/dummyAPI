@@ -15,11 +15,14 @@ MVCモデルのREST API、OAuth/OIDC認証認可、SaaS他サービス連携、�
    - **他サービス連携**: Slack, GitHub REST, Notion, Google Workspace, Salesforce, HubSpot, OpenAI/LLM互換
    - **メッセージング**: SendGrid, Resend, Twilio SMS, LINE Messaging API, FCM プッシュ通知, AWS SQS
    - **決済**: Stripe, PayPal, PayPay (QR/バーコード), PAY.JP, Paidy (後払い), 銀行BaaS (振込・残高照会)
-2. **内蔵Webダッシュボード (`http://localhost:6080`)**:
-   - 全エンドポイントの仕様確認
-   - ブラウザから直接テストリクエスト送信＆レスポンス確認
-   - サーバーが受信したリクエスト履歴（メソッド、ヘッダー、ボディ）をリアルタイム監視
-3. **テスト支援機能**:
+2. **APIリファレンス & Swagger UI (`http://localhost:6080/docs`)**:
+   - OpenAPI 3.0 仕様に完全準拠した **Swagger UI** を内蔵
+   - 各APIのスキーマ、パラメータ、リクエスト・レスポンス例をブラウザ上で視覚的に確認・テスト可能
+   - 仕様JSONは `http://localhost:6080/openapi.json` から取得可能
+3. **内蔵Webダッシュボード (`http://localhost:6080`)**:
+   - 全エンドポイントのカテゴリ別クイックテスト
+   - サーバーが受信したリクエスト履歴（メソッド、ヘッダー、ボディ）をリアルタイム監視するリクエストインスペクター
+4. **テスト支援機能**:
    - **遅延シミュレーション**: `?sleep=1000` または `X-Mock-Delay: 1000` でタイムアウト試験が可能
    - **エラーシミュレーション**: `?mock_status=500` や `?mock_error=rate_limit` で異常系ハンドリング試験が可能
    - **リクエストインスペクター**: `GET /api/_inspector/requests` でクライアントが意図したリクエストを送れているか検証可能

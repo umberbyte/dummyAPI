@@ -1,0 +1,672 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "dummyAPI - Comprehensive Mock & Stub Server",
+    "version": "1.0.0",
+    "description": "API Stub & Mock Server for Testing (MVC REST, Auth/OIDC, Integrations, Messaging, Payments).\n\n### テスト支援機能\nすべてのエンドポイントで以下のクエリパラメータが利用可能です:\n* `?sleep={ms}`: レスポンスをミリ秒単位で遅延（タイムアウト試験用）\n* `?mock_status={status}`: 任意のHTTPステータスコードをシミュレート（例: 500, 503）\n* `?mock_error=rate_limit`: 429 Too Many Requests エラーをシミュレート",
+    "contact": {
+      "name": "dummyAPI Team",
+      "url": "https://github.com/umberbyte/dummyAPI"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:6080",
+      "description": "Local / Docker Stub Server"
+    }
+  ],
+  "tags": [
+    { "name": "1. MVC REST API", "description": "典型的なWebアプリ（ユーザー、EC、ブログ、タスク、ファイル）のRESTful API" },
+    { "name": "2. 認証・認可 (Auth / OIDC)", "description": "OAuth 2.0 / OpenID Connect, WebAuthn/Passkeys, SCIM 2.0, BaaS" },
+    { "name": "3. 他サービス連携 (Integrations)", "description": "Slack, GitHub, Notion, Google Workspace, CRM, LLM" },
+    { "name": "4. メッセージング (Messaging)", "description": "SendGrid, Resend, Twilio SMS, LINE Messaging, FCM, SQS" },
+    { "name": "5. 決済 (Payments)", "description": "Stripe, PayPal, PayPay, PAY.JP, Paidy, 銀行BaaS" },
+    { "name": "6. テスト支援 (Inspector)", "description": "リクエストログの監視、DBシードリセット、カタログ照会" }
+  ],
+  "paths": {
+    "/api/v1/auth/register": {
+      "post": {
+        "tags": ["1. MVC REST API"],
+        "summary": "新規ユーザー登録",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "example": "Alice Tanaka" },
+                  "email": { "type": "string", "example": "alice@example.com" },
+                  "password": { "type": "string", "example": "secret123" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "User created" }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": ["1. MVC REST API"],
+        "summary": "ログイン（トークン発行）",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "example": "alice@example.com" },
+                  "password": { "type": "string", "example": "secret123" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Login success with JWT" }
+        }
+      }
+    },
+    "/api/v1/users/me": {
+      "get": {
+        "tags": ["1. MVC REST API"],
+        "summary": "自身のプロフィール取得",
+        "responses": { "200": { "description": "Current user profile" } }
+      },
+      "patch": {
+        "tags": ["1. MVC REST API"],
+        "summary": "プロフィール部分更新",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": { "name": { "type": "string" }, "email": { "type": "string" } }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Updated profile" } }
+      },
+      "delete": {
+        "tags": ["1. MVC REST API"],
+        "summary": "アカウント退会（論理削除）",
+        "responses": { "200": { "description": "Account deactivated" } }
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "tags": ["1. MVC REST API"],
+        "summary": "ユーザー一覧取得",
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 10 } }
+        ],
+        "responses": { "200": { "description": "List of users" } }
+      }
+    },
+    "/api/v1/products": {
+      "get": {
+        "tags": ["1. MVC REST API"],
+        "summary": "商品一覧取得",
+        "parameters": [
+          { "name": "category", "in": "query", "schema": { "type": "string" } },
+          { "name": "search", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "List of products" } }
+      },
+      "post": {
+        "tags": ["1. MVC REST API"],
+        "summary": "新規商品登録",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "example": "Mechanical Keyboard" },
+                  "category": { "type": "string", "example": "Accessories" },
+                  "price": { "type": "number", "example": 22000 },
+                  "stock": { "type": "integer", "example": 15 }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Product created" } }
+      }
+    },
+    "/api/v1/products/{id}": {
+      "get": {
+        "tags": ["1. MVC REST API"],
+        "summary": "商品詳細取得",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "example": "prod_101" } }],
+        "responses": { "200": { "description": "Product details" } }
+      },
+      "put": {
+        "tags": ["1. MVC REST API"],
+        "summary": "商品情報更新",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Product updated" } }
+      },
+      "delete": {
+        "tags": ["1. MVC REST API"],
+        "summary": "商品削除",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Product deleted" } }
+      }
+    },
+    "/api/v1/cart": {
+      "get": {
+        "tags": ["1. MVC REST API"],
+        "summary": "カート内容取得",
+        "responses": { "200": { "description": "Current cart items and subtotal" } }
+      }
+    },
+    "/api/v1/cart/items": {
+      "post": {
+        "tags": ["1. MVC REST API"],
+        "summary": "カートへ商品追加",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "productId": { "type": "string", "example": "prod_101" },
+                  "quantity": { "type": "integer", "example": 1 }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Item added to cart" } }
+      }
+    },
+    "/api/v1/orders": {
+      "get": {
+        "tags": ["1. MVC REST API"],
+        "summary": "注文履歴一覧取得",
+        "responses": { "200": { "description": "List of orders" } }
+      },
+      "post": {
+        "tags": ["1. MVC REST API"],
+        "summary": "注文確定（チェックアウト）",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userId": { "type": "string", "example": "usr_1" },
+                  "totalAmount": { "type": "number", "example": 34800 }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Order created" } }
+      }
+    },
+    "/api/v1/posts": {
+      "get": {
+        "tags": ["1. MVC REST API"],
+        "summary": "ブログ記事一覧",
+        "responses": { "200": { "description": "List of posts" } }
+      },
+      "post": {
+        "tags": ["1. MVC REST API"],
+        "summary": "記事新規作成",
+        "responses": { "201": { "description": "Post created" } }
+      }
+    },
+    "/api/v1/posts/{id}/like": {
+      "post": {
+        "tags": ["1. MVC REST API"],
+        "summary": "記事にいいね",
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "example": "post_1" } }],
+        "responses": { "200": { "description": "Liked" } }
+      }
+    },
+    "/api/v1/projects": {
+      "get": {
+        "tags": ["1. MVC REST API"],
+        "summary": "プロジェクト一覧",
+        "responses": { "200": { "description": "List of projects" } }
+      }
+    },
+    "/api/v1/uploads/presigned-url": {
+      "post": {
+        "tags": ["1. MVC REST API"],
+        "summary": "S3ダイレクトアップロード用署名付きURL取得",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "filename": { "type": "string", "example": "document.pdf" },
+                  "contentType": { "type": "string", "example": "application/pdf" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Presigned URL details" } }
+      }
+    },
+    "/.well-known/openid-configuration": {
+      "get": {
+        "tags": ["2. 認証・認可 (Auth / OIDC)"],
+        "summary": "OIDC Discovery ドキュメント取得",
+        "responses": { "200": { "description": "OpenID Provider Configuration" } }
+      }
+    },
+    "/.well-known/jwks.json": {
+      "get": {
+        "tags": ["2. 認証・認可 (Auth / OIDC)"],
+        "summary": "JSON Web Key Set (JWKS) 公開鍵取得",
+        "responses": { "200": { "description": "JWKS public keys" } }
+      }
+    },
+    "/oauth/v2/authorize": {
+      "get": {
+        "tags": ["2. 認証・認可 (Auth / OIDC)"],
+        "summary": "OAuth 2.0 認可エンドポイント",
+        "parameters": [
+          { "name": "response_type", "in": "query", "schema": { "type": "string", "default": "code" } },
+          { "name": "client_id", "in": "query", "schema": { "type": "string" } },
+          { "name": "redirect_uri", "in": "query", "schema": { "type": "string" } },
+          { "name": "state", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Authorization code issued / Redirect" } }
+      }
+    },
+    "/oauth/v2/token": {
+      "post": {
+        "tags": ["2. 認証・認可 (Auth / OIDC)"],
+        "summary": "OAuth 2.0 トークン発行",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "grant_type": { "type": "string", "example": "authorization_code" },
+                  "code": { "type": "string", "example": "auth_code_xyz" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Access token & ID token" } }
+      }
+    },
+    "/oauth/v2/userinfo": {
+      "get": {
+        "tags": ["2. 認証・認可 (Auth / OIDC)"],
+        "summary": "OIDC UserInfo（ユーザー属性取得）",
+        "responses": { "200": { "description": "User profile claims" } }
+      }
+    },
+    "/api/webauthn/register/options": {
+      "post": {
+        "tags": ["2. 認証・認可 (Auth / OIDC)"],
+        "summary": "Passkeys (WebAuthn) 登録オプション生成",
+        "responses": { "200": { "description": "Registration options challenge" } }
+      }
+    },
+    "/scim/v2/Users": {
+      "get": {
+        "tags": ["2. 認証・認可 (Auth / OIDC)"],
+        "summary": "SCIM 2.0 ユーザープロビジョニング一覧",
+        "responses": { "200": { "description": "List of SCIM users" } }
+      }
+    },
+    "/api/slack/chat.postMessage": {
+      "post": {
+        "tags": ["3. 他サービス連携 (Integrations)"],
+        "summary": "Slack メッセージ投稿",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": { "type": "string", "example": "C12345678" },
+                  "text": { "type": "string", "example": "Deploy finished successfully!" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Message posted successfully" } }
+      }
+    },
+    "/api/slack/conversations.list": {
+      "get": {
+        "tags": ["3. 他サービス連携 (Integrations)"],
+        "summary": "Slack チャンネル一覧取得",
+        "responses": { "200": { "description": "Channels list" } }
+      }
+    },
+    "/api/github/user": {
+      "get": {
+        "tags": ["3. 他サービス連携 (Integrations)"],
+        "summary": "GitHub ユーザー情報取得",
+        "responses": { "200": { "description": "GitHub user profile" } }
+      }
+    },
+    "/api/github/repos/{owner}/{repo}/issues": {
+      "get": {
+        "tags": ["3. 他サービス連携 (Integrations)"],
+        "summary": "GitHub Issue一覧取得",
+        "parameters": [
+          { "name": "owner", "in": "path", "required": true, "schema": { "type": "string", "example": "umberbyte" } },
+          { "name": "repo", "in": "path", "required": true, "schema": { "type": "string", "example": "dummyAPI" } }
+        ],
+        "responses": { "200": { "description": "List of issues" } }
+      },
+      "post": {
+        "tags": ["3. 他サービス連携 (Integrations)"],
+        "summary": "GitHub Issue作成",
+        "parameters": [
+          { "name": "owner", "in": "path", "required": true, "schema": { "type": "string" } },
+          { "name": "repo", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": { "type": "string", "example": "Bug: Connection timeout" },
+                  "body": { "type": "string", "example": "Details of the bug..." }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Issue created" } }
+      }
+    },
+    "/api/notion/v1/pages": {
+      "post": {
+        "tags": ["3. 他サービス連携 (Integrations)"],
+        "summary": "Notion ページ作成",
+        "responses": { "200": { "description": "Page created" } }
+      }
+    },
+    "/api/google/calendar/events": {
+      "get": {
+        "tags": ["3. 他サービス連携 (Integrations)"],
+        "summary": "Google Calendar イベント取得",
+        "responses": { "200": { "description": "Calendar events" } }
+      }
+    },
+    "/api/salesforce/sobjects/Contact": {
+      "post": {
+        "tags": ["3. 他サービス連携 (Integrations)"],
+        "summary": "Salesforce 連絡先(Contact)作成",
+        "responses": { "201": { "description": "Contact created" } }
+      }
+    },
+    "/v1/chat/completions": {
+      "post": {
+        "tags": ["3. 他サービス連携 (Integrations)"],
+        "summary": "OpenAI / Gemini 互換 LLM チャット生成",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "model": { "type": "string", "example": "gpt-4o-mini" },
+                  "messages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "role": { "type": "string", "example": "user" },
+                        "content": { "type": "string", "example": "Hello AI!" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Chat completion response" } }
+      }
+    },
+    "/v3/mail/send": {
+      "post": {
+        "tags": ["4. メッセージング (Messaging)"],
+        "summary": "SendGrid Web API v3 メール送信",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "personalizations": { "type": "array", "items": { "type": "object" } },
+                  "subject": { "type": "string", "example": "Password Reset OTP" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "202": { "description": "Email queued (HTTP 202 Accepted)" } }
+      }
+    },
+    "/api/resend/emails": {
+      "post": {
+        "tags": ["4. メッセージング (Messaging)"],
+        "summary": "Resend メール送信",
+        "responses": { "200": { "description": "Email sent" } }
+      }
+    },
+    "/2010-04-01/Accounts/{accountSid}/Messages.json": {
+      "post": {
+        "tags": ["4. メッセージング (Messaging)"],
+        "summary": "Twilio Programmable SMS 送信",
+        "parameters": [
+          { "name": "accountSid", "in": "path", "required": true, "schema": { "type": "string", "example": "AC12345678" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "To": { "type": "string", "example": "+819012345678" },
+                  "From": { "type": "string", "example": "+15551234567" },
+                  "Body": { "type": "string", "example": "Your OTP code is 492810" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "SMS queued" } }
+      }
+    },
+    "/v2/bot/message/push": {
+      "post": {
+        "tags": ["4. メッセージング (Messaging)"],
+        "summary": "LINE Messaging API プッシュ送信",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "to": { "type": "string", "example": "U12345678" },
+                  "messages": {
+                    "type": "array",
+                    "items": { "type": "object", "properties": { "type": { "type": "string", "example": "text" }, "text": { "type": "string", "example": "ご注文完了通知" } } }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Messages sent" } }
+      }
+    },
+    "/v1/projects/{projectId}/messages:send": {
+      "post": {
+        "tags": ["4. メッセージング (Messaging)"],
+        "summary": "Firebase Cloud Messaging (FCM) プッシュ通知",
+        "parameters": [
+          { "name": "projectId", "in": "path", "required": true, "schema": { "type": "string", "example": "my-firebase-app" } }
+        ],
+        "responses": { "200": { "description": "Notification dispatched" } }
+      }
+    },
+    "/api/sqs/send-message": {
+      "post": {
+        "tags": ["4. メッセージング (Messaging)"],
+        "summary": "AWS SQS メッセージ送信",
+        "responses": { "200": { "description": "Message queued in SQS" } }
+      }
+    },
+    "/v1/payment_intents": {
+      "post": {
+        "tags": ["5. 決済 (Payments)"],
+        "summary": "Stripe PaymentIntent 作成",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "amount": { "type": "number", "example": 2000 },
+                  "currency": { "type": "string", "example": "jpy" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "PaymentIntent created" } }
+      }
+    },
+    "/v1/checkout/sessions": {
+      "post": {
+        "tags": ["5. 決済 (Payments)"],
+        "summary": "Stripe Checkout Session 作成",
+        "responses": { "200": { "description": "Checkout session URL" } }
+      }
+    },
+    "/v1/refunds": {
+      "post": {
+        "tags": ["5. 決済 (Payments)"],
+        "summary": "Stripe 返金処理",
+        "responses": { "200": { "description": "Refund processed" } }
+      }
+    },
+    "/v2/checkout/orders": {
+      "post": {
+        "tags": ["5. 決済 (Payments)"],
+        "summary": "PayPal 支払い注文作成",
+        "responses": { "201": { "description": "PayPal Order created" } }
+      }
+    },
+    "/v2/codes": {
+      "post": {
+        "tags": ["5. 決済 (Payments)"],
+        "summary": "PayPay QRコード生成 (MPM)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "merchantPaymentId": { "type": "string", "example": "mp_12345" },
+                  "amount": {
+                    "type": "object",
+                    "properties": { "amount": { "type": "number", "example": 1500 }, "currency": { "type": "string", "example": "JPY" } }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "PayPay QR code URL returned" } }
+      }
+    },
+    "/v2/payments": {
+      "post": {
+        "tags": ["5. 決済 (Payments)"],
+        "summary": "PayPay バーコード決済 (CPM)",
+        "responses": { "201": { "description": "Payment completed" } }
+      }
+    },
+    "/v1/charges": {
+      "post": {
+        "tags": ["5. 決済 (Payments)"],
+        "summary": "PAY.JP カード決済作成",
+        "responses": { "200": { "description": "Card charged" } }
+      }
+    },
+    "/payments/paidy": {
+      "post": {
+        "tags": ["5. 決済 (Payments)"],
+        "summary": "Paidy 後払い決済",
+        "responses": { "201": { "description": "Paidy payment authorized" } }
+      }
+    },
+    "/api/banking/accounts/balance": {
+      "get": {
+        "tags": ["5. 決済 (Payments)"],
+        "summary": "銀行口座 残高照会 (BaaS)",
+        "responses": { "200": { "description": "Account balance" } }
+      }
+    },
+    "/api/banking/transfers": {
+      "post": {
+        "tags": ["5. 決済 (Payments)"],
+        "summary": "銀行振込 実行依頼 (BaaS)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "transferAmount": { "type": "number", "example": 50000 },
+                  "beneficiaryBankCode": { "type": "string", "example": "0001" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "202": { "description": "Wire transfer accepted" } }
+      }
+    },
+    "/api/_inspector/requests": {
+      "get": {
+        "tags": ["6. テスト支援 (Inspector)"],
+        "summary": "受信リクエストログ一覧取得",
+        "parameters": [
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 50 } }
+        ],
+        "responses": { "200": { "description": "Captured requests list" } }
+      },
+      "delete": {
+        "tags": ["6. テスト支援 (Inspector)"],
+        "summary": "受信リクエストログの全クリア",
+        "responses": { "200": { "description": "Logs cleared" } }
+      }
+    },
+    "/api/_inspector/reset-db": {
+      "post": {
+        "tags": ["6. テスト支援 (Inspector)"],
+        "summary": "インメモリDBを初期シードデータにリセット",
+        "responses": { "200": { "description": "Database reset" } }
+      }
+    }
+  }
+}
