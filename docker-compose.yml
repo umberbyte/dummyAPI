@@ -1,0 +1,10 @@
+services:
+  dummy-api:
+    build: .
+    container_name: dummy-api-server
+    restart: unless-stopped
+    ports:
+      - "6080:6080"
+    environment:
+      - PORT=6080
+      - NODE_ENV=production

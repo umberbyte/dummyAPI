@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>dummyAPI - API Stub & Mock Server for Testing</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="app-header">
+    <div class="logo-area">
+      <div class="logo-badge">STUB</div>
+      <h1>dummyAPI <span class="badge-ver">v1.0.0</span></h1>
+    </div>
+    <div class="server-status">
+      <span class="status-indicator"></span>
+      <span>Running on port <strong>6080</strong> (Docker / Local)</span>
+    </div>
+  </header>
+
+  <main class="container">
+    <aside class="sidebar">
+      <div class="sidebar-title">Categories</div>
+      <nav id="categoryNav">
+        <!-- Dynamically loaded categories -->
+      </nav>
+      <div class="sidebar-footer">
+        <button id="btnResetDb" class="btn btn-secondary">🔄 Reset In-Memory DB</button>
+      </div>
+    </aside>
+
+    <section class="main-content">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="catalog">📚 API Catalog & Tester</button>
+        <button class="tab-btn" data-tab="inspector">🔍 Request Inspector (<span id="logCount">0</span>)</button>
+      </div>
+
+      <!-- Tab 1: Catalog & Tester -->
+      <div id="tabCatalog" class="tab-content active">
+        <div class="toolbar">
+          <input type="text" id="searchInput" placeholder="Search endpoint or path (e.g. /products, stripe, oauth)..." />
+          <div class="test-options">
+            <label><input type="checkbox" id="chkDelay"> Sleep 500ms</label>
+            <label><input type="checkbox" id="chkError"> Simulate 429 Rate Limit</label>
+          </div>
+        </div>
+
+        <div class="split-view">
+          <div class="endpoint-list" id="endpointList">
+            <!-- Dynamic Endpoints -->
+          </div>
+
+          <div class="tester-panel">
+            <h3>API Execution Result</h3>
+            <div id="testerMeta" class="tester-meta">Select an endpoint on the left to send a test request.</div>
+            <pre id="responseOutput"><code>Waiting for request...</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Request Inspector -->
+      <div id="tabInspector" class="tab-content">
+        <div class="inspector-toolbar">
+          <h3>Captured Incoming Requests</h3>
+          <div class="actions">
+            <button id="btnRefreshLogs" class="btn btn-sm">Refresh</button>
+            <button id="btnClearLogs" class="btn btn-sm btn-danger">Clear History</button>
+          </div>
+        </div>
+        <div class="table-container">
+          <table class="inspector-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Method</th>
+                <th>Path</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody id="logsTableBody">
+              <tr><td colspan="4" style="text-align:center; color:#888;">No requests captured yet.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="logDetailModal" class="log-detail" style="display:none;">
+          <h4>Request Detail</h4>
+          <pre id="logDetailContent"><code></code></pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

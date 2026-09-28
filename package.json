@@ -1,0 +1,28 @@
+{
+  "name": "dummy-api",
+  "version": "1.0.0",
+  "description": "Comprehensive API Stub & Mock Server for Testing (MVC, Auth, Integrations, Messaging, Payments)",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "NODE_ENV=test node test/test-suite.js"
+  },
+  "keywords": [
+    "mock",
+    "stub",
+    "testing",
+    "api",
+    "rest",
+    "oauth",
+    "stripe",
+    "slack"
+  ],
+  "author": "umberbyte",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  }
+}
